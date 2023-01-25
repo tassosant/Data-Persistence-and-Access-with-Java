@@ -4,6 +4,7 @@ package chinookApp.repositories;
 import chinookApp.models.Customer;
 import chinookApp.models.CustomerCountry;
 import chinookApp.models.CustomerGenre;
+import chinookApp.models.CustomerSpender;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -156,7 +157,6 @@ public class CustomerRepository implements CustomerRepositoryInterface{
         return result;
     }
 
-
     public List<Customer> getWithLimit(int limit, int offset){
         String sql = "SELECT * FROM customer ORDER BY customer LIMIT ? OFFSET ?";
         List<Customer> customers = new ArrayList<>();
@@ -235,6 +235,36 @@ public class CustomerRepository implements CustomerRepositoryInterface{
             e.printStackTrace();
         }
         return  genres;
+    }
+    public List<CustomerSpender> getHighestSpender(){
+        String sql = "SELECT all_total, rightTable.customer_id, rightTable.first_name, rightTable.last_name, rightTable.country, rightTable.postal_code, rightTable.phone, rightTable.email " +
+                "FROM " +
+                "(SELECT SUM(total) as all_total,I.customer_id AS c_id FROM invoice AS I GROUP BY I.customer_id HAVING SUM(total) " +
+                "=(SELECT MAX(all_total) FROM " +
+                "(SELECT SUM(total) AS all_total,customer_id FROM invoice GROUP BY customer_id) AS spendersTable) " +
+                ") AS leftTable, customer AS rightTable WHERE leftTable.c_id=rightTable.customer_id";
+
+        List<CustomerSpender> customerSpenders = new ArrayList<>();
+        try(Connection conn = DriverManager.getConnection(url,username,password)) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            ResultSet result = statement.executeQuery();
+            while (result.next()){
+                CustomerSpender customerSpender = new CustomerSpender(
+                        result.getDouble("all_total"),
+                        result.getInt("customer_id"),
+                        result.getString("first_name"),
+                        result.getString("last_name"),
+                        result.getString("country"),
+                        result.getString("postal_code"),
+                        result.getString("phone"),
+                        result.getString("email")
+                );
+                customerSpenders.add(customerSpender);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return customerSpenders;
     }
     @Override
     public int delete(Customer object) {

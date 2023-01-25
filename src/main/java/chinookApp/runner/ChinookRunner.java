@@ -25,6 +25,7 @@ public class ChinookRunner implements ApplicationRunner {
         //System.out.println(customerRepository.getWithLimit(10,3));
         //System.out.println(customerRepository.getCountry());
         System.out.println(customerRepository.getFavouriteGenre(12));
+        System.out.println(customerRepository.getHighestSpender());
     }
 
 }

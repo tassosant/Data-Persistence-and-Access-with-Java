@@ -2,6 +2,7 @@ package chinookApp.repositories;
 import chinookApp.models.Customer;
 import chinookApp.models.CustomerCountry;
 import chinookApp.models.CustomerGenre;
+import chinookApp.models.CustomerSpender;
 
 import java.util.List;
 
@@ -12,4 +13,5 @@ public interface CustomerRepositoryInterface extends CRUDRepositoryInterface<Cus
     List<CustomerCountry> getCountry();
 
     List<CustomerGenre> getFavouriteGenre(int id);
+    public List<CustomerSpender> getHighestSpender();
 }
