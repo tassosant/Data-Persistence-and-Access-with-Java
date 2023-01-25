@@ -18,9 +18,9 @@ public class ChinookRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        int result = customerRepository.insert(new Customer(70,"tasos3", "ant", "gr", "123", "1234567890", "tass"));
+        int result = customerRepository.update(new Customer(63,"tasos63333", "ant", "gr", "123", "1234567890", "tass"));
         System.out.println(result);
-        System.out.println(customerRepository.findById(62));
+        System.out.println(customerRepository.findById(63));
 
     }
 
