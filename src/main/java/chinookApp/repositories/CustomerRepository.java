@@ -3,6 +3,7 @@ package chinookApp.repositories;
 
 import chinookApp.models.Customer;
 import chinookApp.models.CustomerCountry;
+import chinookApp.models.CustomerGenre;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -206,7 +207,35 @@ public class CustomerRepository implements CustomerRepositoryInterface{
         }
         return countries;
     }
-
+    public List<CustomerGenre> getFavouriteGenre(int id){
+        //cannot select max with count inside of it, so this is why we wrote this railway query
+        String sql = "SELECT genre_name FROM " +
+                "(SELECT COUNT(*) AS tracks, G.genre_id AS g_id, I.customer_id, G.name AS genre_name FROM " +
+                "invoice AS I, invoice_line AS IL, track AS T, genre AS G WHERE IL.track_id=T.track_id AND G.genre_id=T.genre_id AND I.invoice_id=IL.invoice_id " +
+                "GROUP BY G.genre_id,I.customer_id " +
+                "HAVING customer_id = ? " +
+                ")AS GENRES_PER_CUSTOMER_LEFT WHERE tracks = " +
+                "(SELECT MAX(GENRES_PER_CUSTOMER_RIGHT.tracks) FROM (SELECT COUNT(*) AS tracks, G.genre_id AS g_id, I.customer_id, G.name AS genre_name FROM " +
+                "invoice AS I, invoice_line AS IL, track AS T, genre AS G WHERE IL.track_id=T.track_id AND G.genre_id=T.genre_id AND I.invoice_id=IL.invoice_id " +
+                "GROUP BY G.genre_id,I.customer_id " +
+                "HAVING customer_id = ?) AS GENRES_PER_CUSTOMER_RIGHT)";
+        List<CustomerGenre> genres = new ArrayList<>();
+        try(Connection conn = DriverManager.getConnection(url,username,password)) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setInt(1,id);
+            statement.setInt(2,id);
+            ResultSet result = statement.executeQuery();
+            while (result.next()){
+                CustomerGenre customerGenre = new CustomerGenre(
+                        result.getString("genre_name")
+                );
+                genres.add(customerGenre);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return  genres;
+    }
     @Override
     public int delete(Customer object) {
         return 0;
