@@ -1,5 +1,6 @@
 package chinookApp.runner;
 
+import chinookApp.models.Customer;
 import chinookApp.repositories.CustomerRepository;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -17,7 +18,10 @@ public class ChinookRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        System.out.println(customerRepository.findById(12));
+        int result = customerRepository.insert(new Customer(70,"tasos3", "ant", "gr", "123", "1234567890", "tass"));
+        System.out.println(result);
+        System.out.println(customerRepository.findById(62));
+
     }
 
 }
