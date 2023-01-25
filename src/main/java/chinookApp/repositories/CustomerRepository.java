@@ -82,8 +82,33 @@ public class CustomerRepository implements CustomerRepositoryInterface{
     }
 
     @Override
-    public Customer findByName(String name) {
-        return null;
+    public List<Customer> findByName(String name) {
+        String sql = "SELECT * FROM customer " +
+                "WHERE first_name " +
+                "LIKE ? "; //be careful, name is CASE SENSITIVE
+
+        List<Customer> customers = new ArrayList<>();
+        try(Connection conn = DriverManager.getConnection(url,username,password)) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1,"%".concat(name).concat("%"));
+            ResultSet result = statement.executeQuery();
+            while (result.next()){
+                Customer customer = new Customer(
+                        result.getInt("customer_id"),
+                        result.getString("first_name"),
+                        result.getString("last_name"),
+                        result.getString("country"),
+                        result.getString("postal_code"),
+                        result.getString("phone"),
+                        result.getString("email")
+                );
+                customers.add(customer);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return customers;
     }
     @Override
     public int insert(Customer customer) {
@@ -138,5 +163,6 @@ public class CustomerRepository implements CustomerRepositoryInterface{
     public int deleteById(Integer id) {
         return 0;
     }
+
 
 }
