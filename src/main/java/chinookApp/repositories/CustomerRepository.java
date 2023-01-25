@@ -56,16 +56,41 @@ public class CustomerRepository implements CustomerRepositoryInterface{
 
     @Override
     public Customer findById(Integer id) {
-        return null;
+        String sql = "SELECT * FROM customer where customer_id = ?";
+        Customer customer = null;
+        try(Connection conn = DriverManager.getConnection(url,username,password)) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setInt(1,id);
+            ResultSet result = statement.executeQuery();
+            while (result.next()){
+                customer = new Customer(
+                        result.getInt("customer_id"),
+                        result.getString("first_name"),
+                        result.getString("last_name"),
+                        result.getString("country"),
+                        result.getString("postal_code"),
+                        result.getString("phone"),
+                        result.getString("email")
+                );
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return customer;
     }
 
     @Override
-    public int insert(Customer object) {
+    public Customer findByName(String name) {
+        return null;
+    }
+    @Override
+    public int insert(Customer customer) {
         return 0;
     }
 
     @Override
-    public int update(Customer object) {
+    public int update(Customer customer) {
         return 0;
     }
 
@@ -79,8 +104,4 @@ public class CustomerRepository implements CustomerRepositoryInterface{
         return 0;
     }
 
-    @Override
-    public Customer findByName(String name) {
-        return null;
-    }
 }

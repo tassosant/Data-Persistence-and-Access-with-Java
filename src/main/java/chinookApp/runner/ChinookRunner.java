@@ -17,7 +17,7 @@ public class ChinookRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-
+        System.out.println(customerRepository.findById(12));
     }
 
 }
