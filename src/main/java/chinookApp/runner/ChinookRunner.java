@@ -23,7 +23,7 @@ public class ChinookRunner implements ApplicationRunner {
         //System.out.println(customerRepository.findById(63));
         //System.out.println(customerRepository.findByName("tasos"));
         System.out.println(customerRepository.getWithLimit(10,3));
-
+        System.out.println(customerRepository.getCountry());
     }
 
 }

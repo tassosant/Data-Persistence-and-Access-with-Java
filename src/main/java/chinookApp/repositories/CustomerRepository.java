@@ -2,6 +2,7 @@ package chinookApp.repositories;
 
 
 import chinookApp.models.Customer;
+import chinookApp.models.CustomerCountry;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -154,7 +155,7 @@ public class CustomerRepository implements CustomerRepositoryInterface{
         return result;
     }
 
-    
+
     public List<Customer> getWithLimit(int limit, int offset){
         String sql = "SELECT * FROM customer ORDER BY customer LIMIT ? OFFSET ?";
         List<Customer> customers = new ArrayList<>();
@@ -179,6 +180,31 @@ public class CustomerRepository implements CustomerRepositoryInterface{
             e.printStackTrace();
         }
         return customers;
+    }
+
+    public List<CustomerCountry> getCountry(){
+        //This query is long because there may exist more countries with the same maximum number of customers
+        String sql = "SELECT COUNT(*) AS customers_per_country, country FROM customer " +
+                "GROUP BY country HAVING COUNT(*) = " +
+                "(SELECT MAX(customers_per_country) AS max_customers FROM " +
+                "(SELECT COUNT(*) AS customers_per_country, country FROM customer " +
+                "GROUP BY country" +
+                ") AS countriesRightTable)";
+        List<CustomerCountry> countries = new ArrayList<>();
+        try(Connection conn = DriverManager.getConnection(url,username,password)) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            ResultSet result = statement.executeQuery();
+            while (result.next()){
+                CustomerCountry country = new CustomerCountry(
+                        result.getInt("customers_per_country"),
+                        result.getString("country")
+                );
+                countries.add(country);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return countries;
     }
 
     @Override

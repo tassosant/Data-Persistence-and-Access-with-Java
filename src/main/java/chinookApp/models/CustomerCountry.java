@@ -1,5 +1,6 @@
 package chinookApp.models;
 
-public class CustomerCountry {
-
-}
+public record CustomerCountry (
+    int customers_per_country,
+    String country
+){}
