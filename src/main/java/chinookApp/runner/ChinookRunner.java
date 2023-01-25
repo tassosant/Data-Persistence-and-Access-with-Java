@@ -5,12 +5,14 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class ChinookRunner implements ApplicationRunner {
-    final CustomerRepository chinookDAO;
+    final CustomerRepository customerRepository;
 
-    public ChinookRunner(CustomerRepository chinookDAO) {
-        this.chinookDAO = chinookDAO;
+    public ChinookRunner(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
     }
 
     @Override

@@ -5,6 +5,8 @@ import chinookApp.models.Customer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 //import org.springframework.boot.;
@@ -20,10 +22,36 @@ public class CustomerRepository implements CustomerRepositoryInterface{
         this.username = username;
         this.password = password;
     }
-
+    public void test() {
+        try(Connection conn = DriverManager.getConnection(url, username,password);) {
+            System.out.println("Connected to Postgres...!!!!!!!!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     public List<Customer> findAll() {
-        return null;
+        String sql = "SELECT * FROM customer";
+        List<Customer> customers = new ArrayList<>();
+        try(Connection conn = DriverManager.getConnection(url,username,password)) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            ResultSet result = statement.executeQuery();
+            while (result.next()){
+                Customer customer = new Customer(
+                        result.getInt("customer_id"),
+                        result.getString("first_name"),
+                        result.getString("last_name"),
+                        result.getString("country"),
+                        result.getString("postal_code"),
+                        result.getString("phone"),
+                        result.getString("email")
+                );
+                customers.add(customer);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return customers;
     }
 
     @Override
@@ -49,5 +77,10 @@ public class CustomerRepository implements CustomerRepositoryInterface{
     @Override
     public int deleteById(Integer id) {
         return 0;
+    }
+
+    @Override
+    public Customer findByName(String name) {
+        return null;
     }
 }
