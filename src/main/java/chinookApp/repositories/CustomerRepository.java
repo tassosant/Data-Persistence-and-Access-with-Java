@@ -31,7 +31,7 @@ public class CustomerRepository implements CustomerRepositoryInterface{
     }
     @Override
     public List<Customer> findAll() {
-        String sql = "SELECT * FROM customer";
+        String sql = "SELECT * FROM customer ORDER BY customer_id";
         List<Customer> customers = new ArrayList<>();
         try(Connection conn = DriverManager.getConnection(url,username,password)) {
             PreparedStatement statement = conn.prepareStatement(sql);
@@ -152,6 +152,33 @@ public class CustomerRepository implements CustomerRepositoryInterface{
             e.printStackTrace();
         }
         return result;
+    }
+
+    
+    public List<Customer> getWithLimit(int limit, int offset){
+        String sql = "SELECT * FROM customer ORDER BY customer LIMIT ? OFFSET ?";
+        List<Customer> customers = new ArrayList<>();
+        try(Connection conn = DriverManager.getConnection(url,username,password)) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setInt(1,limit);
+            statement.setInt(2,offset);
+            ResultSet result = statement.executeQuery();
+            while (result.next()){
+                Customer customer = new Customer(
+                        result.getInt("customer_id"),
+                        result.getString("first_name"),
+                        result.getString("last_name"),
+                        result.getString("country"),
+                        result.getString("postal_code"),
+                        result.getString("phone"),
+                        result.getString("email")
+                );
+                customers.add(customer);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return customers;
     }
 
     @Override

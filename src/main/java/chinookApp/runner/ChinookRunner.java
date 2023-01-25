@@ -21,7 +21,8 @@ public class ChinookRunner implements ApplicationRunner {
         /*int result = customerRepository.update(new Customer(63,"tasos63333", "ant", "gr", "123", "1234567890", "tass"));
         System.out.println(result);*/
         //System.out.println(customerRepository.findById(63));
-        System.out.println(customerRepository.findByName("tasos"));
+        //System.out.println(customerRepository.findByName("tasos"));
+        System.out.println(customerRepository.getWithLimit(10,3));
 
     }
 
