@@ -157,6 +157,14 @@ public class CustomerRepository implements CustomerRepositoryInterface{
         return result;
     }
 
+    /**
+     *
+     * @param limit     Number of rows to display
+     * @param offset    Start from a specific row
+     * @return          Returns a list of record Customers with the specified number of rows
+     * @throws SQLException
+     * Thrown if connection with database is lost or the query is wrong
+     */
     public List<Customer> getWithLimit(int limit, int offset){
         String sql = "SELECT * FROM customer ORDER BY customer LIMIT ? OFFSET ?";
         List<Customer> customers = new ArrayList<>();
@@ -183,6 +191,12 @@ public class CustomerRepository implements CustomerRepositoryInterface{
         return customers;
     }
 
+    /**
+     * This method returns the country with the most customers. If two or more countries have the same maximum number of customers, this method returns them as well.
+     * @return Returns a list of record CustomerCountry
+     * @throws SQLException
+     * Thrown if connection with database is lost or the query is wrong
+     */
     public List<CustomerCountry> getCountry(){
         //This query is long because there may exist more countries with the same maximum number of customers
         String sql = "SELECT COUNT(*) AS customers_per_country, country FROM customer " +
@@ -207,8 +221,16 @@ public class CustomerRepository implements CustomerRepositoryInterface{
         }
         return countries;
     }
+
+    /**
+     * This method returns a list of the most favourite customer's genres. All genres with same popularity(number of tracks) are in the returned List.
+     * @param id    An integer which is the id of record Customer.
+     * @return      Returns a list of record CustomerGenre.
+     * @throws SQLException
+     * Thrown if connection with database is lost or the query is wrong
+     */
     public List<CustomerGenre> getFavouriteGenre(int id){
-        //cannot select max with count inside of it, so this is why we wrote this railway query
+        //SQL does not allow to select the method count() inside of max() method, so this is why we wrote this railway query
         String sql = "SELECT genre_name FROM " +
                 "(SELECT COUNT(*) AS tracks, G.genre_id AS g_id, I.customer_id, G.name AS genre_name FROM " +
                 "invoice AS I, invoice_line AS IL, track AS T, genre AS G WHERE IL.track_id=T.track_id AND G.genre_id=T.genre_id AND I.invoice_id=IL.invoice_id " +
@@ -236,6 +258,13 @@ public class CustomerRepository implements CustomerRepositoryInterface{
         }
         return  genres;
     }
+
+    /**
+     * This method returns a customer who has spent the most. In case of two or more customers who have same spends,  are in the returned list.
+     * @return      Returns a list of record CustomerSpender
+     * @throws SQLException
+     * Thrown if connection with database is lost or the query is wrong 
+     */
     public List<CustomerSpender> getHighestSpender(){
         String sql = "SELECT all_total, rightTable.customer_id, rightTable.first_name, rightTable.last_name, rightTable.country, rightTable.postal_code, rightTable.phone, rightTable.email " +
                 "FROM " +
