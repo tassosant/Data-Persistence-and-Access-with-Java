@@ -263,7 +263,7 @@ public class CustomerRepository implements CustomerRepositoryInterface{
      * This method returns a customer who has spent the most. In case of two or more customers who have same spends,  are in the returned list.
      * @return      Returns a list of record CustomerSpender
      * @throws SQLException
-     * Thrown if connection with database is lost or the query is wrong 
+     * Thrown if connection with database is lost or the query is wrong
      */
     public List<CustomerSpender> getHighestSpender(){
         String sql = "SELECT all_total, rightTable.customer_id, rightTable.first_name, rightTable.last_name, rightTable.country, rightTable.postal_code, rightTable.phone, rightTable.email " +

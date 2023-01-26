@@ -1,0 +1,1 @@
+UPDATE superhero SET name = 'Batman' WHERE id=3;
